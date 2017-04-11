@@ -118,6 +118,69 @@ class Cohort {
   } // end of where
 
 
+  static findAll(connection, args, callback) {
+    let db = connection;
+    let query = `SELECT * from cohorts ${Object.keys(args)[0]} ${args[Object.keys(args)[0]]} ${Object.keys(args)[1]} ${args[Object.keys(args)[1]]}`;
+
+    db.all(query, function(err, rows) {
+      // rows.forEach(function(row) {
+      //   console.log(`${row.id} ${row.firstname} ${row.lastname} ${row.birthdate}`);
+      // })
+
+      callback(rows, err);
+
+    });
+
+  } // end of findAll version2
+
+  static findByAttributes (connection, cohort_obj) {
+    let db = connection;
+    let query = `SELECT * from cohorts where name = '${cohort_obj.name}'`;
+
+    let cohortClass = this;
+    return new Promise ( (resolve, reject) => {
+      db.all(query, function(err, rows) {
+        if(err){
+          console.log(err);
+          reject(err);
+        }
+        else {
+          if(rows.length) {
+            // console.log(rows);
+            resolve(rows);
+          }
+          else {
+            console.log("Not found , create new Cohort")
+            cohortClass.create(connection, cohort_obj);
+
+            // reject(err);
+          }
+        }
+
+      });
+
+    })
+
+
+  } // end of findById
+
+  static findOrCreate(connection, cohort_obj) {
+    // find first
+    this.findByAttributes(connection, cohort_obj)
+      .then ( (result) => {
+          console.log("findByAttributes-------->result:")
+          console.log(result);
+          // let student = new Student(result.id, result.firstname, result.lastname, result.cohort_id, result.id);
+          // return result;
+      })
+      .catch( (err) => {
+        console.log("then err");
+        console.log(err);
+      })
+
+    // if not found, create
+
+  }
 
 
 
