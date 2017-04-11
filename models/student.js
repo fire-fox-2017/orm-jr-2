@@ -182,23 +182,46 @@ class Student {
     // });
 
 
+    // return new Promise ( (resolve, reject) => {
+    //   console.log("hahahahaha");
+    //   db.each(query, function(err, row) {
+    //     console.log("here");
+    //     if(err) {
+    //       console.log(err);
+    //       reject(err);
+    //     } else {
+    //       console.log("findByAttributes not error")
+    //       console.log(row);
+    //       // let student = new Student(row.id, row.firstname, row.lastname, row.cohort_id);
+    //       // resolve(student);
+    //       resolve(row);
+    //     }
+    //   });
+    // })
+    let student = this;
     return new Promise ( (resolve, reject) => {
-      db.each(query, function(err, row) {
-        console.log("here");
-        if(err) {
+      db.all(query, function(err, rows) {
+        if(err){
           console.log(err);
           reject(err);
-        } else {
-          console.log("findByAttributes not error")
-          console.log(row);
-          // let student = new Student(row.id, row.firstname, row.lastname, row.cohort_id);
-          // resolve(student);
-          resolve(row);
         }
+        else {
+          if(rows.length) {
+            // console.log(rows);
+            resolve(rows);
+          }
+          else {
+            console.log("Not found , create new Student")
+            student.create(connection, student_obj);
+
+            // reject(err);
+          }
+        }
+
       });
 
-
     })
+
 
   } // end of findById
 
@@ -206,30 +229,19 @@ class Student {
     // find first
     this.findByAttributes(connection, student_obj)
       .then ( (result) => {
-        if(result) {
-          console.log("--------> " + result);
-          // let student = new Student(row.id, row.firstname, row.lastname, row.cohort_id);
-
-          return result;
-        }
-        else {
-
-          console.log("-----call create  ----> " + result);
-
-        }
+          console.log("findByAttributes-------->result:")
+          console.log(result);
+          // let student = new Student(result.id, result.firstname, result.lastname, result.cohort_id, result.id);
+          // return result;
       })
-      .then( (err) => {
+      .catch( (err) => {
+        console.log("then err");
         console.log(err);
       })
 
-
     // if not found, create
 
-
-
   }
-
-
 
 }
 
