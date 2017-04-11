@@ -112,6 +112,7 @@ class Student {
     //   })
     // });
 
+
     db.each(query, function(err, row) {
       console.log(row);
       let student = new Student(row.id, row.firstname, row.lastname, row.cohort_id);
@@ -147,6 +148,86 @@ class Student {
 
 
 
+  static findAll(connection, args, callback) {
+    let db = connection;
+    let query = `SELECT * from students ${Object.keys(args)[0]} ${args[Object.keys(args)[0]]} ${Object.keys(args)[1]} ${args[Object.keys(args)[1]]}`;
+
+    db.all(query, function(err, rows) {
+      // rows.forEach(function(row) {
+      //   console.log(`${row.id} ${row.firstname} ${row.lastname} ${row.birthdate}`);
+      // })
+
+      callback(rows, err);
+
+    });
+
+  } // end of findAll version2
+
+
+  static findByAttributes (connection, student_obj) {
+    let db = connection;
+    let query = `SELECT * from students where firstname = '${student_obj.firstname}' AND lastname = '${student_obj.lastname}' AND cohort_id = ${student_obj.cohort_id}`;
+
+    // db.all(query, function(err, rows) {
+    //   rows.forEach(function(row) {
+    //     console.log(`${row.id} ${row.firstname} ${row.lastname} ${row.birthdate}`);
+    //   })
+    // });
+
+
+    // db.each(query, function(err, row) {
+    //   console.log(row);
+    //   let student = new Student(row.id, row.firstname, row.lastname, row.cohort_id);
+    //   return student;
+    // });
+
+
+    return new Promise ( (resolve, reject) => {
+      db.each(query, function(err, row) {
+        console.log("here");
+        if(err) {
+          console.log(err);
+          reject(err);
+        } else {
+          console.log("findByAttributes not error")
+          console.log(row);
+          // let student = new Student(row.id, row.firstname, row.lastname, row.cohort_id);
+          // resolve(student);
+          resolve(row);
+        }
+      });
+
+
+    })
+
+  } // end of findById
+
+  static findOrCreate(connection, student_obj) {
+    // find first
+    this.findByAttributes(connection, student_obj)
+      .then ( (result) => {
+        if(result) {
+          console.log("--------> " + result);
+          // let student = new Student(row.id, row.firstname, row.lastname, row.cohort_id);
+
+          return result;
+        }
+        else {
+
+          console.log("-----call create  ----> " + result);
+
+        }
+      })
+      .then( (err) => {
+        console.log(err);
+      })
+
+
+    // if not found, create
+
+
+
+  }
 
 
 
