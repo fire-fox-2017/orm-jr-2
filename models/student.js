@@ -71,6 +71,38 @@ class Student {
     })
   }
 
+  static findOrCreate(db, data){
+    // console.log(typeof data.firstname);
+    let query = `SELECT * FROM Students WHERE firstname = '${data.firstname}' AND lastname = '${data.lastname}' AND cohort_id = '${data.cohortId}'`
+    db.get(query,(err,file)=>{
+      if(err){
+        console.log(err);
+      } else {
+        if(file == undefined) {
+          let insert_query = `INSERT INTO Students (firstname, lastname, cohort_id) VALUES ('${data.firstname}','${data.lastname}','${data.cohortId}')`
+          db.serialize(() => {
+            db.run(insert_query, (err)=>{
+              if(err){
+                console.log(err.message);
+              } else {
+                console.log(`Data Insert Success`);
+              }
+            })
+          })
+        } else {
+          console.log(`Datanya udah ada coy`);
+        }
+      }
+    })
+  }
+
+  static findAll(db,limit,callback){
+    // console.log(limit.limit);
+    // console.log(limit.offset);
+    let query = `SELECT * FROM Students LIMIT ${limit.limit} OFFSET ${limit.offset}`
+    db.all(query, callback)
+  }
+
 }
 
 export default Student
