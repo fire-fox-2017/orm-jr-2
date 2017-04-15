@@ -96,7 +96,7 @@ class Student {
     })
   }
 
-  static findAll(db,limit,callback){
+  static findAllOffset(db,limit,callback){
     // console.log(limit.limit);
     // console.log(limit.offset);
     let query = `SELECT * FROM Students LIMIT ${limit.limit} OFFSET ${limit.offset}`

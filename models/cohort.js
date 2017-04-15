@@ -62,6 +62,36 @@ class Cohort {
     })
   }
 
+  static findAllOffset(db, limit, callback) {
+    let query = `SELECT * FROM cohorts LIMIT ${limit.limit} OFFSET ${limit.offset}`
+    db.all(query, callback)
+}
+
+  static findOrCreate(db, data){
+    // console.log(typeof data.firstname);
+    let query = `SELECT * FROM cohorts WHERE name = '${data.cohortName}'`;
+    db.get(query,(err,file)=>{
+      if(err){
+        console.log(err);
+      } else {
+        if(file == undefined) {
+          let insert_query = `INSERT INTO cohorts (name) VALUES ('${data.cohortName}')`;
+          db.serialize(() => {
+            db.run(insert_query, (err)=>{
+              if(err){
+                console.log(err.message);
+              } else {
+                console.log(`Data Insert Success`);
+              }
+            })
+          })
+        } else {
+          console.log(`Datanya udah ada coy`);
+        }
+      }
+    })
+  }
+
 }
 
 export default Cohort
