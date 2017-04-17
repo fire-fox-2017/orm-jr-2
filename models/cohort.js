@@ -81,6 +81,39 @@ class Cohort {
         })
     }
 
+    static findAll(db, obj, callback) {
+        db.serialize(() => {
+            let GET_ALL_DATA = `SELECT * FROM cohorts LIMIT ${obj.limit} OFFSET ${obj.offset}`
+            db.all(GET_ALL_DATA, (err, rows) => {
+                if (err) {
+                    callback(err, rows)
+                } else {
+                    callback(rows, err)
+                }
+            })
+        })
+    }
+
+    static findOrCreate(db, objCohort) {
+        db.serialize(() => {
+            let SELECT_DATA_BY_PARAMETER = `SELECT * FROM cohorts WHERE name = '${objCohort._name}'`
+            db.all(SELECT_DATA_BY_PARAMETER, (err, rows) => {
+                if (rows.length) {
+                    console.log(`Data has exist in table cohorts`);
+                } else {
+                    let INSERT_DATA_COHORT = `INSERT INTO cohorts (name) VALUES ('${objCohort._name}')`
+                    db.run(INSERT_DATA_COHORT, (err) => {
+                        if (err) {
+                            console.log(`Insert to table cohorts error`);
+                        } else {
+                            console.log(`Insert to table cohorts successfull`);
+                        }
+                    })
+                }
+            })
+        })
+    }
+
 }
 
 export default Cohort
