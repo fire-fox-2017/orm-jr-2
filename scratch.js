@@ -68,6 +68,7 @@ Cohort.findAll(dbModel.connection, {limit:2 , offset: 1},function(data, err) {
 
 
 
+Student.findOrCreate(dbModel.connection, {firstname: "aa", lastname: "bb", cohort_id: 3})
 
 
 //
