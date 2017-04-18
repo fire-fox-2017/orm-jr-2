@@ -1,7 +1,7 @@
 "use strict"
 
 const sqlite = require('sqlite3').verbose();
-import Student from "./cohort.js";
+//import Student from "./student.js";
 
 class Cohort {
   constructor (name, id = null) {
@@ -61,20 +61,19 @@ class Cohort {
     });
   }
 
-  // static findAll (db, callback) {
-  //   db = new sqlite.Database(db.filename);
-  //   db.serialize(function () {
-  //     db.all(`SELECT * FROM cohorts;`, function (err, rows) {
-  //       callback(rows, err);
-  //     });
-  //   });
-  // }
+  static findAll (db, callback) {
+    db = new sqlite.Database(db.filename);
+    db.serialize(function () {
+      db.all(`SELECT * FROM cohorts;`, function (err, rows) {
+        callback(rows, err);
+      });
+    });
+  }
 
-  static findAll(db,string,callback) {
+  static findAll2(db, option, callback) {
       db.serialize(() => {
-          let query5= `SELECT * FROM cohorts LIMIT ${string.limit} OFFSET ${string.offset}`;
-          db.all(query5, (err, rows) => {
-              callback(rows, err)
+          db.all(`SELECT * FROM student LIMIT ${option.limit} OFFSET ${option.offset}`, (err, rows) => {
+              callback(rows, err);
           })
       })
   }
@@ -90,26 +89,27 @@ class Cohort {
     });
   }
 
-  static findOrCreate(db, objCohort){
-      let query7 = `SELECT * FROM cohorts WHERE name = '${objCohort.name}'`;
-      let query8 = `INSERT INTO cohorts (name) VALUES ('${objCohort.name}')`;
-
+  static findOrCreate(db, obj) {
       db.serialize(() => {
-        db.all(query7, (err,rows) => {
-          if(rows.length > 0){
-            console.log('Data Sudah Ada');
-          } else {
-            db.run(query8, (err) => {
+          db.all(`SELECT * FROM student WHERE firstname = '${obj.firstname}' AND lastname = '${obj.lastname}' AND cohort_id = '${obj.cohort_id}'`, (err, rows) => {
               if (err) {
-                  console.log(`Insert data error`);
+                  console.log(`ERR Find: ${err}`);
               } else {
-                  console.log(`Data berhasil masuk`);
+                  if (rows.length > 0) {
+                      console.log(` Data ditemukan : ${rows[0].id} | ${rows[0].firstname} | ${rows[0].lastname} | ${rows[0].cohort_id} `);
+                  } else {
+                      db.run(`INSERT INTO students (firstname, lastname, cohort_id) VALUES ('${obj.firstname}', '${obj.lastname}', ${obj.cohort_id})`, (errs) => {
+                          if (err) {
+                              console.log(`ERR Input: ${errs}`);
+                          } else {
+                              console.log(`Insert student success.`);
+                          }
+                      })
+                  }
               }
-            })
-          }
-        })
+          })
       })
-    }
+  }
 
 }
 
